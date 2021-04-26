@@ -4119,7 +4119,7 @@ void CDriver::Output_Preprocessing(CConfig **config, CConfig *driver_config, COu
     case DISC_ADJ_TNE2_EULER: case DISC_ADJ_TNE2_NAVIER_STOKES: case DISC_ADJ_TNE2_RANS:
       if (rank == MASTER_NODE)
         cout << "Adjoint TNE2 Euler/Navier-Stokes/RANS output structure." << endl;
-      output[iZone] = new CAdjTNE2CompOutput(config[iZone], nDim);
+      //output[iZone] = new CAdjTNE2CompOutput(config[iZone], nDim);
       break;
     case DISC_ADJ_INC_EULER: case DISC_ADJ_INC_NAVIER_STOKES: case DISC_ADJ_INC_RANS:
       if (rank == MASTER_NODE)

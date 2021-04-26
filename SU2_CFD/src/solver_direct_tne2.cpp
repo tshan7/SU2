@@ -4080,8 +4080,9 @@ void CTNE2EulerSolver::BC_Far_Field(CGeometry *geometry, CSolver **solution_cont
 void CTNE2EulerSolver::BC_Inlet(CGeometry *geometry, CSolver **solution_container,
                                 CNumerics *conv_numerics, CNumerics *visc_numerics, CConfig *config, unsigned short val_marker) {
 
-  cout << "This dont work" << endl;
-  unsigned short iVar, iDim, iSpecies, RHO_INDEX, nSpecies;
+  unsigned short iVar, iDim, iSpecies, nSpecies,
+      RHO_INDEX, T_INDEX, TVE_INDEX, VEL_INDEX, H_INDEX, A_INDEX, P_INDEX,
+      RHOCVTR_INDEX, RHOCVVE_INDEX;
   unsigned long iVertex, iPoint, Point_Normal;
   su2double P_Total, T_Total, Velocity[3], Velocity2, H_Total, Temperature, Riemann,
       Pressure, Density, Energy, *Flow_Dir, Mach2, SoundSpeed2, SoundSpeed_Total2, Vel_Mag,
@@ -4098,13 +4099,29 @@ void CTNE2EulerSolver::BC_Inlet(CGeometry *geometry, CSolver **solution_containe
   bool gravity              = (config->GetGravityForce());
   bool viscous              = config->GetViscous();
 
+
+  //HARDCODE TODO
+  Gamma = 1.6667;
+  Gamma_Minus_One = Gamma - 1.0;
+  Gas_Constant= 208.62;
+
   su2double *U_domain = new su2double[nVar];      su2double *U_inlet = new su2double[nVar];
   su2double *V_domain = new su2double[nPrimVar];  su2double *V_inlet = new su2double[nPrimVar];
   su2double *Normal   = new su2double[nDim];
   su2double UnitNormal[3];
+  su2double *Ys       = new su2double[config->GetnSpecies()];
 
-  nSpecies = config->GetnSpecies();
-  su2double Spec_Density[nSpecies]; //QT THROWING AN ERROR WHEN USING nSPECIES
+  /*--- Extract NEMO variables ---*/
+  nSpecies      = config->GetnSpecies();
+  VEL_INDEX     = nodes->GetVelIndex();
+  P_INDEX       = nodes->GetPIndex();
+  RHO_INDEX     = nodes->GetRhoIndex();
+  A_INDEX       = nodes->GetAIndex();
+  RHOCVTR_INDEX = nodes->GetRhoCvtrIndex();
+  RHOCVVE_INDEX = nodes->GetRhoCvveIndex();
+  T_INDEX       = nodes->GetTIndex();
+  TVE_INDEX     = nodes->GetTveIndex();
+  H_INDEX       = nodes->GetHIndex();
 
   /*--- Loop over all the vertices on this boundary marker ---*/
   for (iVertex = 0; iVertex < geometry->nVertex[val_marker]; iVertex++) {
@@ -4163,7 +4180,7 @@ void CTNE2EulerSolver::BC_Inlet(CGeometry *geometry, CSolver **solution_containe
           Velocity2 += Velocity[iDim]*Velocity[iDim];
         }
         Energy      = U_domain[nVar-2]/Density;
-        Pressure    = Gamma_Minus_One*Density*(Energy-0.5*Velocity2);
+        Pressure    = V_domain[P_INDEX];
         H_Total     = (Gamma*Gas_Constant/Gamma_Minus_One)*T_Total;
         SoundSpeed2 = Gamma*Pressure/Density;
 
@@ -4171,7 +4188,7 @@ void CTNE2EulerSolver::BC_Inlet(CGeometry *geometry, CSolver **solution_containe
            from the domain interior. ---*/
         Riemann   = 2.0*sqrt(SoundSpeed2)/Gamma_Minus_One;
         for (iDim = 0; iDim < nDim; iDim++)
-          Riemann += Velocity[iDim]*UnitaryNormal[iDim];
+          Riemann += Velocity[iDim]*UnitNormal[iDim];
 
         /*--- Total speed of sound ---*/
         SoundSpeed_Total2 = Gamma_Minus_One*(H_Total - (Energy + Pressure/Density)+0.5*Velocity2) + SoundSpeed2;
@@ -4180,7 +4197,7 @@ void CTNE2EulerSolver::BC_Inlet(CGeometry *geometry, CSolver **solution_containe
            be negative due to outward facing boundary normal convention. ---*/
         alpha = 0.0;
         for (iDim = 0; iDim < nDim; iDim++)
-          alpha += UnitaryNormal[iDim]*Flow_Dir[iDim];
+          alpha += UnitNormal[iDim]*Flow_Dir[iDim];
 
         /*--- Coefficients in the quadratic equation for the velocity ---*/
         aa =  1.0 + 0.5*Gamma_Minus_One*alpha*alpha;
@@ -4212,7 +4229,7 @@ void CTNE2EulerSolver::BC_Inlet(CGeometry *geometry, CSolver **solution_containe
 
         /*--- Static temperature from the speed of sound relation ---*/
         Temperature = SoundSpeed2/(Gamma*Gas_Constant);
-        //NEED TVE AS WELL
+        Temperature_ve = V_domain[TVE_INDEX]; //TODO NEED TVE AS WELL
 
         /*--- Static pressure using isentropic relation at a point ---*/
         Pressure = P_Total*pow((Temperature/T_Total),Gamma/Gamma_Minus_One);
@@ -4226,26 +4243,28 @@ void CTNE2EulerSolver::BC_Inlet(CGeometry *geometry, CSolver **solution_containe
         //NEED EVE AS WELL
 
         /*--- Conservative variables, using the derived quantities ---*/
+        //TODO EVE
         for (iSpecies=0; iSpecies<nSpecies; iSpecies++)
-          U_inlet[iSpecies] = Spec_Density[iSpecies];
+          U_inlet[iSpecies] = 1.0*Density;
         for (iDim = 0; iDim < nDim; iDim++)
           U_inlet[nSpecies+iDim] = Velocity[iDim]*Density;
         U_inlet[nVar-2] = Energy*Density;
-        //U_inlet[nVar-1]=Eve
+        U_inlet[nVar-1] = U_domain[nVar-1];
 
         /*--- Primitive variables, using the derived quantities ---*/
+        //TODO, 1species only
         for (iSpecies=0; iSpecies<nSpecies; iSpecies++)
-          V_inlet[iSpecies] = Spec_Density[iSpecies];
-        V_inlet[nSpecies] = Temperature;
-        //V_inlet[nSpecies+1] = Tve
+          V_inlet[iSpecies] = 1.0*Density;
+        V_inlet[T_INDEX]   = Temperature;
+        V_inlet[TVE_INDEX] = V_domain[TVE_INDEX];
         for (iDim = 0; iDim < nDim; iDim++)
-          V_inlet[nSpecies+2] = Velocity[iDim];
-        V_inlet[nSpecies+nDim+2] = Pressure;
+          V_inlet[VEL_INDEX+iDim] = Velocity[iDim];
+        V_inlet[P_INDEX]   = Pressure;
         V_inlet[RHO_INDEX] = Density;
-        //V_inlet[H_INDEX] = H;
-        //V_inlet[A_INDEX] = A;
-        //V_inlet[RHO_CVTR_INDEX] = rcvtr;
-        //V_inlet[RHO_CVVE_INDEX] = rcvve;
+        V_inlet[H_INDEX] = H_Total;
+        V_inlet[A_INDEX] = sqrt(SoundSpeed2);
+        V_inlet[RHOCVTR_INDEX] = V_domain[RHOCVTR_INDEX];
+        V_inlet[RHOCVVE_INDEX] = V_domain[RHOCVVE_INDEX];
 
         break;
 
@@ -4342,11 +4361,10 @@ void CTNE2EulerSolver::BC_Inlet(CGeometry *geometry, CSolver **solution_containe
   }
 
   /*--- Free locally allocated memory ---*/
-  delete [] U_domain;
   delete [] U_inlet;
-  delete [] V_domain;
   delete [] V_inlet;
   delete [] Normal;
+  delete [] Ys;
 }
 
 void CTNE2EulerSolver::BC_Outlet(CGeometry *geometry, CSolver **solution_container,
