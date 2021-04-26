@@ -4084,7 +4084,7 @@ void CTNE2EulerSolver::BC_Inlet(CGeometry *geometry, CSolver **solution_containe
       RHO_INDEX, T_INDEX, TVE_INDEX, VEL_INDEX, H_INDEX, A_INDEX, P_INDEX,
       RHOCVTR_INDEX, RHOCVVE_INDEX;
   unsigned long iVertex, iPoint, Point_Normal;
-  su2double P_Total, T_Total, Velocity[3], Velocity2, H_Total, Temperature, Riemann,
+  su2double P_Total, T_Total, Velocity[3], Velocity2, H_Total, Temperature, Temperature_ve, Riemann,
       Pressure, Density, Energy, *Flow_Dir, Mach2, SoundSpeed2, SoundSpeed_Total2, Vel_Mag,
       alpha, aa, bb, cc, dd, Area, UnitaryNormal[3];
 
