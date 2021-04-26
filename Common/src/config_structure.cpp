@@ -4115,7 +4115,7 @@ void CConfig::SetPostprocessing(unsigned short val_software, unsigned short val_
     su2double mf;
 
     switch (Kind_GasModel) {
-    case ONESPECIES:
+    case ARGON:
       /*--- Define parameters of the gas model ---*/
       nSpecies    = 1;
       ionization  = false;
@@ -4134,29 +4134,59 @@ void CConfig::SetPostprocessing(unsigned short val_software, unsigned short val_
 
       /*--- Assign gas properties ---*/
       // Rotational modes of energy storage
-      RotationModes[0] = 2.0;
+      RotationModes[0] = 0.0;
       // Molar mass [kg/kmol]
-      Molar_Mass[0] = 14.0067+15.9994;
+      Molar_Mass[0] = 39.948;
       // Characteristic vibrational temperatures for calculating e_vib [K]
-      //CharVibTemp[0] = 3395.0;
-      CharVibTemp[0] = 1000.0;
+      CharVibTemp[0] = 0.0;
       // Formation enthalpy: (JANAF values, [KJ/Kmol])
       Enthalpy_Formation[0] = 0.0;					//N2
       // Reference temperature (JANAF values, [K])
       Ref_Temperature[0] = 0.0;
+      nElStates[0] = 7;
+      
+      Blottner  = new su2double*[nSpecies];
+      for (iSpecies = 0; iSpecies < nSpecies; iSpecies++)
+        Blottner[iSpecies] = new su2double[3];
 
-      /*        nElStates[0] = 0;
-           CharElTemp   = new double *[nSpecies];
-           degen        = new double *[nSpecies];
+      /*--- AR: Blottner coefficients. ---*/
+      Blottner[0][0] = 3.83444322E-03;   Blottner[0][1] = 6.74718764E-01;   Blottner[0][2] = -1.24290388E+01;
 
-           OSPthetae    = new double[nElStates[0]];
-           OSPthetae[0] = 1.0;
-           OSPg         = new double[nElStates[0]];
-           OSPg[0]      = 1.0;
+      for (iSpecies = 0; iSpecies < nSpecies; iSpecies++)
+        maxEl = max(maxEl, nElStates[iSpecies]);
 
-           CharElTemp[0] = OSPthetae;
-           degen[0] = OSPg;*/
+      /*--- Allocate electron data arrays ---*/
+      CharElTemp = new su2double*[nSpecies];
+      degen      = new su2double*[nSpecies];
+      for (iSpecies = 0; iSpecies < nSpecies; iSpecies++) {
+        CharElTemp[iSpecies] = new su2double[maxEl];
+        degen[iSpecies]      = new su2double[maxEl];
+      }
 
+      /*--- Initialize the arrays ---*/
+      for (iSpecies = 0; iSpecies < nSpecies; iSpecies++) {
+        for (iEl = 0; iEl < maxEl; iEl++) {
+          CharElTemp[iSpecies][iEl] = 0.0;
+          degen[iSpecies][iEl] = 0.0;
+        }
+      }
+
+      /*--- AR: 7 states ---*/
+      CharElTemp[0][0] = 0.000000000000000E+00;
+      CharElTemp[0][1] = 1.611135736988230E+05;
+      CharElTemp[0][2] = 1.625833076870950E+05;
+      CharElTemp[0][3] = 1.636126382960720E+05;
+      CharElTemp[0][4] = 1.642329518358000E+05;
+      CharElTemp[0][5] = 1.649426852542080E+05;
+      CharElTemp[0][6] = 1.653517702884570E+05;
+      degen[0][0] = 1;
+      degen[0][1] = 9;
+      degen[0][2] = 21;
+      degen[0][3] = 7;
+      degen[0][4] = 3;
+      degen[0][5] = 5;
+      degen[0][6] = 15;
+      
       break;
 
     case N2:
