@@ -4324,6 +4324,12 @@ void CTNE2EulerSolver::BC_Inlet(CGeometry *geometry, CSolver **solution_containe
 
       /*--- Set various quantities in the solver class ---*/
       conv_numerics->SetConservative(U_domain, U_inlet);
+      conv_numerics->SetPrimitive(V_domain,V_inlet);
+      
+      /*--- Pass supplementary information to CNumerics ---*/
+      conv_numerics->SetdPdU(nodes->GetdPdU(iPoint),     node_infty->GetdPdU(0));
+      conv_numerics->SetdTdU(nodes->GetdTdU(iPoint),     node_infty->GetdTdU(0));
+      conv_numerics->SetdTvedU(nodes->GetdTvedU(iPoint), node_infty->GetdTvedU(0));
 
       if (grid_movement)
         conv_numerics->SetGridVel(geometry->node[iPoint]->GetGridVel(), geometry->node[iPoint]->GetGridVel());
