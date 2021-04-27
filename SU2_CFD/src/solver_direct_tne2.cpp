@@ -4123,6 +4123,17 @@ void CTNE2EulerSolver::BC_Inlet(CGeometry *geometry, CSolver **solution_containe
   TVE_INDEX     = nodes->GetTveIndex();
   H_INDEX       = nodes->GetHIndex();
 
+  /*--- Pass structure of the primitive variable vector to CNumerics ---*/
+  conv_numerics->SetRhosIndex   ( nodes->GetRhosIndex()    );
+  conv_numerics->SetRhoIndex    ( nodes->GetRhoIndex()     );
+  conv_numerics->SetPIndex      ( nodes->GetPIndex()       );
+  conv_numerics->SetTIndex      ( nodes->GetTIndex()       );
+  conv_numerics->SetTveIndex    ( nodes->GetTveIndex()     );
+  conv_numerics->SetVelIndex    ( nodes->GetVelIndex()     );
+  conv_numerics->SetHIndex      ( nodes->GetHIndex()       );
+  conv_numerics->SetAIndex      ( nodes->GetAIndex()       );
+  conv_numerics->SetRhoCvtrIndex( nodes->GetRhoCvtrIndex() );
+  conv_numerics->SetRhoCvveIndex( nodes->GetRhoCvveIndex() );
   /*--- Loop over all the vertices on this boundary marker ---*/
   for (iVertex = 0; iVertex < geometry->nVertex[val_marker]; iVertex++) {
     iPoint = geometry->vertex[val_marker][iVertex]->GetNode();
@@ -4325,7 +4336,7 @@ void CTNE2EulerSolver::BC_Inlet(CGeometry *geometry, CSolver **solution_containe
       /*--- Set various quantities in the solver class ---*/
       conv_numerics->SetConservative(U_domain, U_inlet);
       conv_numerics->SetPrimitive(V_domain,V_inlet);
-      
+
       /*--- Pass supplementary information to CNumerics ---*/
       conv_numerics->SetdPdU(nodes->GetdPdU(iPoint),     node_infty->GetdPdU(0));
       conv_numerics->SetdTdU(nodes->GetdTdU(iPoint),     node_infty->GetdTdU(0));
