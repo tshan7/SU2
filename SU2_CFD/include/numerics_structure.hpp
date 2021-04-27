@@ -2323,11 +2323,6 @@ private:
   unsigned short iDim, iVar, jVar, kVar;
   su2double mL, mR, mLP, mRM, mF, pLP, pRM, pF, Phi;
 
-  su2double *Diff_U;
-  su2double *RoeU, *RoeV, *RoeEve;
-  su2double *RoedPdU;
-  unsigned short nSpecies, nPrimVar, nPrimVarGrad, nVar, nDim;
-  
 public:
   
   /*!
@@ -2475,6 +2470,18 @@ private:
   su2double a_j, P_j, h_j, ProjVel_j;
   su2double sq_vel, Proj_ModJac_Tensor_ij;
   unsigned short nSpecies, nVar, nDim;
+
+  /*--- Roe Only ---*/
+  su2double *Diff_U;
+  su2double *RoeU, *RoeV, *RoeEve;
+  su2double *ProjFlux_i, *ProjFlux_j;
+  su2double *Lambda, *Epsilon;
+  su2double **P_Tensor, **invP_Tensor;
+  su2double RoeSoundSpeed;
+  su2double ProjVelocity, ProjVelocity_i, ProjVelocity_j;
+  su2double R;
+  su2double *RoedPdU;
+  unsigned short nPrimVar, nPrimVarGrad;
 
 public:
 
