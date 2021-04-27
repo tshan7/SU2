@@ -2322,6 +2322,14 @@ private:
   ProjVelocity, ProjVelocity_i, ProjVelocity_j;
   unsigned short iDim, iVar, jVar, kVar;
   su2double mL, mR, mLP, mRM, mF, pLP, pRM, pF, Phi;
+
+  su2double *Diff_U;
+  su2double *RoeU, *RoeV, *RoeEve;
+  su2double *ProjFlux_i, *ProjFlux_j;
+  su2double RoeSoundSpeed;
+  su2double Proj_ModJac_Tensor_ij, R;
+  su2double *RoedPdU;
+  unsigned short nSpecies, nPrimVar, nPrimVarGrad, nVar, nDim;
   
 public:
   

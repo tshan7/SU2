@@ -501,7 +501,7 @@ CUpwAUSM_TNE2::CUpwAUSM_TNE2(unsigned short val_nDim, unsigned short val_nVar,
   P_Tensor    = new su2double* [nVar];
   invP_Tensor = new su2double* [nVar];
 
-  for (iVar = 0; iVar < nVar; iVar++) {
+  for (unsigned short iVar = 0; iVar < nVar; iVar++) {
     P_Tensor[iVar]    = new su2double [nVar];
     invP_Tensor[iVar] = new su2double [nVar];
   }
@@ -532,7 +532,7 @@ CUpwAUSM_TNE2::~CUpwAUSM_TNE2(void) {
   delete [] Lambda;
   delete [] Epsilon;
 
-  for (iVar = 0; iVar < nVar; iVar++) {
+  for (unsigned iVar = 0; iVar < nVar; iVar++) {
     delete [] P_Tensor[iVar];
     delete [] invP_Tensor[iVar];
   }
