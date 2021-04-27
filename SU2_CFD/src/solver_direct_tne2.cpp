@@ -4134,6 +4134,7 @@ void CTNE2EulerSolver::BC_Inlet(CGeometry *geometry, CSolver **solution_containe
   conv_numerics->SetAIndex      ( nodes->GetAIndex()       );
   conv_numerics->SetRhoCvtrIndex( nodes->GetRhoCvtrIndex() );
   conv_numerics->SetRhoCvveIndex( nodes->GetRhoCvveIndex() );
+  
   /*--- Loop over all the vertices on this boundary marker ---*/
   for (iVertex = 0; iVertex < geometry->nVertex[val_marker]; iVertex++) {
     iPoint = geometry->vertex[val_marker][iVertex]->GetNode();
