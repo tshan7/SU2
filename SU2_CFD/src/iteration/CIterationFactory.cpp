@@ -94,6 +94,12 @@ CIteration* CIterationFactory::CreateIteration(ENUM_MAIN_SOLVER kindSolver, cons
       iteration = new CDiscAdjFluidIteration(config);
       break;
 
+    case DISC_ADJ_NEMO_EULER: case DISC_ADJ_NEMO_NAVIER_STOKES:
+      if (rank == MASTER_NODE)
+        cout << "Discrete adjoint thermochemical nonequilibrium Euler/Navier-Stokes/RANS fluid iteration." << endl;
+      iteration = new CDiscAdjFluidIteration(config);
+      break;
+
     case DISC_ADJ_FEM_EULER : case DISC_ADJ_FEM_NS : case DISC_ADJ_FEM_RANS :
       if (rank == MASTER_NODE)
         cout << "Discrete adjoint finite element Euler/Navier-Stokes/RANS fluid iteration." << endl;

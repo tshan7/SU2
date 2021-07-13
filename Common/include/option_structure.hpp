@@ -196,7 +196,9 @@ enum ENUM_MAIN_SOLVER {
   FEM_LES = 29,                     /*!< \brief Definition of the finite element Large Eddy Simulation Navier-Stokes' (LES) solver. */
   MULTIPHYSICS = 30,
   NEMO_EULER = 41,                  /*!< \brief Definition of the NEMO Euler solver. */
-  NEMO_NAVIER_STOKES = 42           /*!< \brief Definition of the NEMO NS solver. */
+  NEMO_NAVIER_STOKES = 42,          /*!< \brief Definition of the NEMO NS solver. */
+  DISC_ADJ_NEMO_EULER = 43,         /*!< \brief Definition of the NEMO Euler solver. */
+  DISC_ADJ_NEMO_NAVIER_STOKES = 44  /*!< \brief Definition of the NEMO NS solver. */
 };
 static const MapType<std::string, ENUM_MAIN_SOLVER> Solver_Map = {
   MakePair("NONE", NO_SOLVER)
@@ -220,6 +222,8 @@ static const MapType<std::string, ENUM_MAIN_SOLVER> Solver_Map = {
   MakePair("DISC_ADJ_EULER", DISC_ADJ_EULER)
   MakePair("DISC_ADJ_RANS", DISC_ADJ_RANS)
   MakePair("DISC_ADJ_NAVIERSTOKES", DISC_ADJ_NAVIER_STOKES)
+  MakePair("DISC_ADJ_NEMO_EULER", DISC_ADJ_NEMO_EULER)
+  MakePair("DISC_ADJ_NEMO_NAVIERSTOKES", DISC_ADJ_NEMO_NAVIER_STOKES)
   MakePair("DISC_ADJ_INC_EULER", DISC_ADJ_INC_EULER)
   MakePair("DISC_ADJ_INC_RANS", DISC_ADJ_INC_RANS)
   MakePair("DISC_ADJ_INC_NAVIERSTOKES", DISC_ADJ_INC_NAVIER_STOKES)

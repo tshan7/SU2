@@ -71,6 +71,9 @@ CDiscAdjMultizoneDriver::CDiscAdjMultizoneDriver(char* confFile,
         case DISC_ADJ_INC_EULER: case DISC_ADJ_INC_NAVIER_STOKES: case DISC_ADJ_INC_RANS:
           direct_iteration[iZone][iInst] = CIterationFactory::CreateIteration(INC_EULER, config_container[iZone]);
           break;
+        case DISC_ADJ_NEMO_EULER: case DISC_ADJ_NEMO_NAVIER_STOKES:
+          direct_iteration[iZone][iInst] = CIterationFactory::CreateIteration(NEMO_EULER, config_container[iZone]);
+          break;  
         case DISC_ADJ_HEAT:
           direct_iteration[iZone][iInst] = CIterationFactory::CreateIteration(HEAT_EQUATION, config_container[iZone]);
           break;
@@ -93,6 +96,9 @@ CDiscAdjMultizoneDriver::CDiscAdjMultizoneDriver(char* confFile,
       case DISC_ADJ_INC_EULER: case DISC_ADJ_INC_NAVIER_STOKES: case DISC_ADJ_INC_RANS:
         direct_output[iZone] = COutputFactory::CreateOutput(INC_EULER, config_container[iZone], nDim);
         break;
+      case DISC_ADJ_NEMO_EULER: case DISC_ADJ_NEMO_NAVIER_STOKES:
+        direct_output[iZone] = COutputFactory::CreateOutput(NEMO_EULER, config_container[iZone], nDim);
+        break;  
       case DISC_ADJ_HEAT:
         direct_output[iZone] = COutputFactory::CreateOutput(HEAT_EQUATION, config_container[iZone], nDim);
         break;
@@ -710,6 +716,7 @@ void CDiscAdjMultizoneDriver::DirectIteration(unsigned short iZone, RECORDING ki
 
       case DISC_ADJ_EULER:     case DISC_ADJ_NAVIER_STOKES:
       case DISC_ADJ_INC_EULER: case DISC_ADJ_INC_NAVIER_STOKES:
+      case DISC_ADJ_NEMO_EULER: case DISC_ADJ_NEMO_NAVIER_STOKES:
         cout << " Zone " << iZone << " (flow)       - log10[U(0)]    : "
              << log10(solvers[FLOW_SOL]->GetRes_RMS(0)) << endl;
         if (config_container[iZone]->AddRadiation()) {
@@ -770,6 +777,7 @@ void CDiscAdjMultizoneDriver::SetObjFunction(RECORDING kind_recording) {
 
       case DISC_ADJ_EULER:     case DISC_ADJ_NAVIER_STOKES:     case DISC_ADJ_RANS:
       case DISC_ADJ_INC_EULER: case DISC_ADJ_INC_NAVIER_STOKES: case DISC_ADJ_INC_RANS:
+      case DISC_ADJ_NEMO_EULER: case DISC_ADJ_NEMO_NAVIER_STOKES:
 
         solvers[FLOW_SOL]->Pressure_Forces(geometry, config);
         solvers[FLOW_SOL]->Momentum_Forces(geometry, config);
@@ -807,6 +815,8 @@ void CDiscAdjMultizoneDriver::SetObjFunction(RECORDING kind_recording) {
 
       case DISC_ADJ_EULER:     case DISC_ADJ_NAVIER_STOKES:     case DISC_ADJ_RANS:
       case DISC_ADJ_INC_EULER: case DISC_ADJ_INC_NAVIER_STOKES: case DISC_ADJ_INC_RANS:
+      case DISC_ADJ_NEMO_EULER: case DISC_ADJ_NEMO_NAVIER_STOKES:
+
       {
         auto val = solvers[FLOW_SOL]->GetTotal_ComboObj();
 

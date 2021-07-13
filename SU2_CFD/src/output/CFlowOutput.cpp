@@ -866,9 +866,11 @@ void CFlowOutput::WriteMetaData(const CConfig *config){
     meta_file <<"INITIAL_BCTHRUST= " << config->GetInitial_BCThrust() << endl;
 
 
-    if (( config->GetKind_Solver() == DISC_ADJ_EULER ||
-          config->GetKind_Solver() == DISC_ADJ_NAVIER_STOKES ||
-          config->GetKind_Solver() == DISC_ADJ_RANS )) {
+    if ( config->GetKind_Solver() == DISC_ADJ_EULER ||
+         config->GetKind_Solver() == DISC_ADJ_NAVIER_STOKES ||
+         config->GetKind_Solver() == DISC_ADJ_RANS  ||
+         config->GetKind_Solver() == DISC_ADJ_NEMO_EULER ||
+         config->GetKind_Solver() == DISC_ADJ_NEMO_NAVIER_STOKES) {
       meta_file << "SENS_AOA=" << GetHistoryFieldValue("SENS_AOA") * PI_NUMBER / 180.0 << endl;
     }
   }

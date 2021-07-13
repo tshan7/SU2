@@ -55,6 +55,8 @@ void CMultiGridIntegration::MultiGrid_Iteration(CGeometry ****geometry,
     case DISC_ADJ_FEM_EULER:
     case DISC_ADJ_FEM_NS:
     case DISC_ADJ_RANS:
+    case DISC_ADJ_NEMO_EULER:
+    case DISC_ADJ_NEMO_NAVIER_STOKES:
       direct = true;
       break;
     default:
