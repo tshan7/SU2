@@ -261,7 +261,7 @@ void CNEMONSSolver::Viscous_Residual(CGeometry *geometry,
       for (iVar = 0; iVar < nVar; iVar++)
         for (jVar = 0; jVar < nVar; jVar++)
           if ((residual.jacobian_i[iVar][jVar] != residual.jacobian_i[iVar][jVar]) ||
-              (residual.jacobian_j[iVar][jVar] != residual.jacobian_j[iVar][jVar])   )
+              (residual.jacobian_j[iVar][jVar] != residual.jacobian_j[iVar][jVar]))
             err = true;
 
     /*--- Update the residual and Jacobian ---*/
@@ -269,7 +269,7 @@ void CNEMONSSolver::Viscous_Residual(CGeometry *geometry,
       LinSysRes.SubtractBlock(iPoint, residual);
       LinSysRes.AddBlock(jPoint, residual);
       if (implicit) {
-        Jacobian.UpdateBlocks(iEdge, iPoint, iPoint, residual.jacobian_i, residual.jacobian_j);
+        Jacobian.UpdateBlocks(iEdge, iPoint, jPoint, residual.jacobian_i, residual.jacobian_j);
       }
     }
   } //iEdge
@@ -371,6 +371,7 @@ void CNEMONSSolver::BC_HeatFluxNonCatalytic_Wall(CGeometry *geometry,
         nodes->SetVal_ResTruncError_Zero(iPoint,nSpecies+iDim);
       }
       if (implicit) {
+        //TODO
         /*--- Enforce the no-slip boundary condition in a strong way ---*/
         for (iVar = nSpecies; iVar < nSpecies+nDim; iVar++) {
           total_index = iPoint*nVar+iVar;
@@ -632,7 +633,7 @@ void CNEMONSSolver::BC_IsothermalNonCatalytic_Wall(CGeometry *geometry,
                                                    CConfig *config,
                                                    unsigned short val_marker) {
 
-  unsigned short iDim, iVar,jVar;
+  unsigned short iDim, iVar, jVar;
   unsigned long iVertex, iPoint, jPoint;
   su2double ktr, kve, Ti, Tvei, Tj, Tvej, Twall, dij, theta,
   Area, *Normal, UnitNormal[3], *Coord_i, *Coord_j, C;

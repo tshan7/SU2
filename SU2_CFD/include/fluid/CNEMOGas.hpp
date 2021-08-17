@@ -79,7 +79,7 @@ protected:
   hs,                                    /*!< \brief Species enthalpies */
   MolarFractions,                        /*!< \brief Species molar fractions */
   ws,                                    /*!< \brief Species net production rates */
-  taus,                                  /*!< \brief Relaxation time scale */
+  taus,                                  /*!< \brief Relaxtion time scales */
   DiffusionCoeff,                        /*!< \brief Species diffusion coefficients*/
   Enthalpy_Formation,                    /*!< \brief Enthalpy of formation */
   Ref_Temperature;                       /*!< \brief Reference temperature for thermodynamic relations */
@@ -102,7 +102,7 @@ public:
   /*!
    * \brief Set mixture thermodynamic state.
    * \param[in] P    - Pressure.
-   * \param[in] Ms   - Mass fractions.
+   * \param[in] Ms   - Mass fraction of the gas.
    * \param[in] T    - Translational/Rotational temperature.
    * \param[in] Tve  - Vibrational/Electronic temperature.
    */
