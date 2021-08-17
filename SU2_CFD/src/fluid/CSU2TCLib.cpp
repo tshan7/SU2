@@ -638,11 +638,15 @@ vector<su2double>& CSU2TCLib::GetSpeciesCvTraRot(){
   return Cvtrs;
 }
 
-vector<su2double>& CSU2TCLib::ComputeSpeciesCvVibEle(){
+vector<su2double>& CSU2TCLib::ComputeSpeciesCvVibEle(su2double val_T){
 
   su2double thoTve, exptv, num, num2, num3, denom, Cvvs, Cves;
   unsigned short iElectron = nSpecies-1;
 
+  /*--- Rename for convenience. ---*/
+  Tve = val_T;
+
+  /*--- Loop through species. ---*/
   for(iSpecies = 0; iSpecies < nSpecies; iSpecies++){
 
     /*--- If requesting electron specific heat ---*/
@@ -1132,8 +1136,7 @@ void CSU2TCLib::ThermalConductivitiesWBE(){
   ks.resize(nSpecies,0.0);
   kves.resize(nSpecies,0.0);
 
-
-  Cvves = ComputeSpeciesCvVibEle();
+  Cvves = ComputeSpeciesCvVibEle(Tve);
 
   for (iSpecies = 0; iSpecies < nSpecies; iSpecies++) {
     ks[iSpecies] = mus[iSpecies]*(15.0/4.0 + RotationModes[iSpecies]/2.0)*Ru/MolarMass[iSpecies];
@@ -1313,7 +1316,7 @@ void CSU2TCLib::ThermalConductivitiesGY(){
   }
 
   /*--- Mixture vibrational-electronic specific heat ---*/
-  Cvves = ComputeSpeciesCvVibEle();
+  Cvves = ComputeSpeciesCvVibEle(Tve);
   su2double rhoCvve = 0.0;
   for (iSpecies = 0; iSpecies < nSpecies; iSpecies++)
     rhoCvve += rhos[iSpecies]*Cvves[iSpecies];

@@ -45,9 +45,17 @@ CCentLax_NEMO::CCentLax_NEMO(unsigned short val_nDim,
   Diff_U   = new su2double[nVar];
   MeanU    = new su2double[nVar];
   MeanV    = new su2double[nPrimVar];
+  MeandPdU = new su2double[nVar];
   ProjFlux = new su2double[nVar];
   Flux     = new su2double[nVar];
+  mean_eves.resize(nSpecies,0.0);
 
+  Jacobian_i = new su2double* [nVar];
+  Jacobian_j = new su2double* [nVar];
+  for (unsigned short iVar = 0; iVar < nVar; iVar++) {
+    Jacobian_i[iVar] = new su2double [nVar];
+    Jacobian_j[iVar] = new su2double [nVar];
+  }
 }
 
 CCentLax_NEMO::~CCentLax_NEMO(void) {
@@ -55,12 +63,20 @@ CCentLax_NEMO::~CCentLax_NEMO(void) {
   delete [] Diff_U;
   delete [] MeanU;
   delete [] MeanV;
+  delete [] MeandPdU;
   delete [] ProjFlux;
   delete [] Flux;
+  for (unsigned short iVar = 0; iVar < nVar; iVar++) {
+    delete [] Jacobian_i[iVar];
+    delete [] Jacobian_j[iVar];
+  }
+  delete [] Jacobian_i;
+  delete [] Jacobian_j;
 }
 
 CNumerics::ResidualType<> CCentLax_NEMO::ComputeResidual(const CConfig *config) {
 
+  unsigned short iDim, iVar, iSpecies;
   su2double rho_i, rho_j, h_i, h_j, a_i, a_j;
   su2double ProjVel_i, ProjVel_j;
 
@@ -82,8 +98,8 @@ CNumerics::ResidualType<> CCentLax_NEMO::ComputeResidual(const CConfig *config) 
     MeanV[iVar] = 0.5*(V_i[iVar]+V_j[iVar]);
 
   /*--- Compute NonEq specific variables ---*/
-  //vector<su2double> mean_eves = fluidmodel->ComputeSpeciesEve(MeanV[TVE_INDEX]);
-  //fluidmodel->ComputedPdU(MeanV, mean_eves, MeandPdU);
+  vector<su2double> mean_eves = fluidmodel->ComputeSpeciesEve(MeanV[TVE_INDEX]);
+  fluidmodel->ComputedPdU(MeanV, mean_eves, MeandPdU);
 
   /*--- Get projected flux tensor ---*/
   GetInviscidProjFlux(MeanU, MeanV, Normal, ProjFlux);
@@ -119,6 +135,39 @@ CNumerics::ResidualType<> CCentLax_NEMO::ComputeResidual(const CConfig *config) 
     Flux[iVar] = ProjFlux[iVar]+Epsilon_0*Diff_U[iVar]*StretchingFactor*MeanLambda;
   }
 
-  return ResidualType<>(Flux, nullptr, nullptr);
+  if (implicit) {
+
+    for (iVar = 0; iVar < nVar; iVar++){
+      for (jVar = 0; jVar < nVar; jVar++){
+        Jacobian_i[iVar][jVar] = 0.0;
+        Jacobian_j[iVar][jVar] = 0.0; }}
+
+    cte = Epsilon_0*StretchingFactor*MeanLambda;
+
+    for (iVar = 0; iVar < nSpecies+nDim; iVar++) {
+      Jacobian_i[iVar][iVar] += cte;
+      Jacobian_j[iVar][iVar] -= cte;
+    }
+
+    /*--- Last rows: CAREFUL!! You have differences of \rho_Enthalpy, not differences of \rho_Energy ---*/
+    for (iSpecies = 0; iSpecies < nSpecies; iSpecies++)
+      Jacobian_i[nSpecies+nDim][iSpecies] += cte*dPdU_i[iSpecies];
+    for (iDim = 0; iDim < nDim; iDim++)
+      Jacobian_i[nSpecies+nDim][nSpecies+iDim]   += cte*dPdU_i[nSpecies+iDim];
+    Jacobian_i[nSpecies+nDim][nSpecies+nDim]     += cte*(1+dPdU_i[nSpecies+nDim]);
+    Jacobian_i[nSpecies+nDim][nSpecies+nDim+1]   += cte*dPdU_i[nSpecies+nDim+1];
+    Jacobian_i[nSpecies+nDim+1][nSpecies+nDim+1] += cte;
+
+    /*--- Last row of Jacobian_j ---*/
+    for (iSpecies = 0; iSpecies < nSpecies; iSpecies++)
+      Jacobian_j[nSpecies+nDim][iSpecies] -= cte*dPdU_j[iSpecies];
+    for (iDim = 0; iDim < nDim; iDim++)
+      Jacobian_j[nSpecies+nDim][nSpecies+iDim]   -= cte*dPdU_j[nSpecies+nDim];
+    Jacobian_j[nSpecies+nDim][nSpecies+nDim]     -= cte*(1+dPdU_j[nSpecies+nDim]);
+    Jacobian_j[nSpecies+nDim][nSpecies+nDim+1]   -= cte*dPdU_j[nSpecies+nDim+1];
+    Jacobian_j[nSpecies+nDim+1][nSpecies+nDim+1] -= cte;
+  }
+
+  return ResidualType<>(Flux, Jacobian_i, Jacobian_j);
 
 }
