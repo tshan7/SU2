@@ -450,6 +450,7 @@ void CNEMONumerics::GetViscousProjJacs(su2double *val_Mean_PrimVar,
   for (iVar = 0; iVar < nSpecies; iVar++) {
     //sumdFdYjh[iVar]   = 0.0;
     //sumdFdYjeve[iVar] = 0.0;
+    //TODO DELETE
     for (jVar = 0; jVar < nSpecies; jVar++) {
       dFdYi[iVar][jVar] = 0.0;
       dFdYj[iVar][jVar] = 0.0;
@@ -506,20 +507,20 @@ void CNEMONumerics::GetViscousProjJacs(su2double *val_Mean_PrimVar,
 
       // first term
       dJdr_j[iSpecies][jSpecies] +=  0.5*(Ds[iSpecies]*theta/dij *
-                                          (Ys_j[iSpecies]*rho_i/rho_j +
-                                           Ys_i[iSpecies]));
+                                         (Ys_j[iSpecies]*rho_i/rho_j +
+                                          Ys_i[iSpecies]));
       dJdr_i[iSpecies][jSpecies] += -0.5*(Ds[iSpecies]*theta/dij *
-                                          (Ys_j[iSpecies] +
-                                           Ys_i[iSpecies]*rho_j/rho_i));
+                                         (Ys_j[iSpecies] +
+                                          Ys_i[iSpecies]*rho_j/rho_i));
 
       // second term
       dJdr_j[iSpecies][jSpecies] +=
-          0.25*(Ys_i[iSpecies] - rho_i/rho_j*Ys_j[iSpecies])*sumY
+            0.25*(Ys_i[iSpecies] - rho_i/rho_j*Ys_j[iSpecies])*sumY
           + 0.25*(Ys_i[iSpecies]+Ys_j[iSpecies])*(rho_i+rho_j)*Ds[jSpecies]*theta/(dij*rho_j)
           - 0.25*(Ys_i[iSpecies]+Ys_j[iSpecies])*(rho_i+rho_j)*sumY_j/rho_j;
 
       dJdr_i[iSpecies][jSpecies] +=
-          0.25*(-rho_j/rho_i*Ys_i[iSpecies]+Ys_j[iSpecies])*sumY
+            0.25*(-rho_j/rho_i*Ys_i[iSpecies]+Ys_j[iSpecies])*sumY
           - 0.25*(Ys_i[iSpecies]+Ys_j[iSpecies])*(rho_i+rho_j)*Ds[jSpecies]*theta/(dij*rho_i)
           + 0.25*(Ys_i[iSpecies]+Ys_j[iSpecies])*(rho_i+rho_j)*sumY_i/rho_i;
     }

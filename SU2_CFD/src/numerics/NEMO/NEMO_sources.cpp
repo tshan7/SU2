@@ -92,8 +92,8 @@ CNumerics::ResidualType<> CSource_NEMO::ComputeChemistry(const CConfig *config) 
   }
 
   /*--- Rename for convenience ---*/
-  T       = V_i[T_INDEX];
-  Tve     = V_i[TVE_INDEX];
+  T   = V_i[T_INDEX];
+  Tve = V_i[TVE_INDEX];
   for(iSpecies = 0; iSpecies < nSpecies; iSpecies++)
     rhos[iSpecies]=V_i[RHOS_INDEX+iSpecies];
 
