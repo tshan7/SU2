@@ -757,6 +757,10 @@ public:
    * \param[in] solver_container - Container vector with all the solutions.
    * \param[in] config - Definition of the particular problem.
    */
+
+  inline virtual void ExtractCAA_Sensitivity(CGeometry *geometry,
+                                              CConfig *config) { }
+
   inline virtual void Set_Heatflux_Areas(CGeometry *geometry, CConfig *config) { }
 
   /*!

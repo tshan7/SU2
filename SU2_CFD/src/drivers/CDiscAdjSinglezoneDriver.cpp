@@ -355,6 +355,12 @@ void CDiscAdjSinglezoneDriver::SetObjFunction(){
   case MAIN_SOLVER::DISC_ADJ_EULER:           case MAIN_SOLVER::DISC_ADJ_NAVIER_STOKES:          case MAIN_SOLVER::DISC_ADJ_RANS:
   case MAIN_SOLVER::DISC_ADJ_FEM_EULER:       case MAIN_SOLVER::DISC_ADJ_FEM_NS:                 case MAIN_SOLVER::DISC_ADJ_FEM_RANS:
 
+    /*--- Jax-based externally computed objective function -> set objective to zero ---*/
+
+    if (config_container[ZONE_0]->GetKind_ObjFunc()==JAX_OBJ) {
+      break;
+    }
+
     /*--- Surface based obj. function ---*/
 
     direct_output->SetHistory_Output(geometry, solver, config, config->GetTimeIter(),

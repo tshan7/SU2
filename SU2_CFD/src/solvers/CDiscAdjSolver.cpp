@@ -110,6 +110,20 @@ CDiscAdjSolver::CDiscAdjSolver(CGeometry *geometry, CConfig *config, CSolver *di
     SolverName = "ADJ.SOL";
     break;
   }
+
+  dJdU_Jax = new su2double* [nPoint];
+  for(int iPoint = 0; iPoint<nPoint; iPoint++) {
+    dJdU_Jax[iPoint] = new su2double[nDim+2];
+    for (int iVar=0; iVar < nDim+2; iVar++) {
+      dJdU_Jax[iPoint][iVar] = 0.0;
+    }
+  }
+
+  LocalPointIndex = new short[nPoint];
+  for (int iPoint=0; iPoint<nPoint; iPoint++) {
+    LocalPointIndex[iPoint] = -1;
+  }
+
 }
 
 CDiscAdjSolver::~CDiscAdjSolver(void) { delete nodes; }
@@ -471,6 +485,12 @@ void CDiscAdjSolver::SetAdjoint_Output(CGeometry *geometry, CConfig *config) {
       }
     }
 
+    /*--- Add dJdU contribution from Jax computation to the adjoint solution ---*/
+
+    for (auto iVar = 0u; iVar < nVar; iVar++) {
+      Solution[iVar] += dJdU_Jax[iPoint][iVar];
+    }
+
     /*--- Set the adjoint values of the primal solution. ---*/
 
     direct_solver->GetNodes()->SetAdjointSolution(iPoint,Solution);
@@ -653,4 +673,45 @@ void CDiscAdjSolver::LoadRestart(CGeometry **geometry, CSolver ***solver, CConfi
       solver[iMesh][ADJFLOW_SOL]->GetNodes()->SetSolution(iPoint, Solution);
     }
   }
+}
+
+void CDiscAdjSolver::ExtractCAA_Sensitivity(CGeometry *geometry, CConfig *config) {
+  unsigned long iPoint, iVar, iPanel;
+  string text_line;
+  ifstream gradient_file;
+  char buffer [50];
+
+  char cstr [64];
+  int rank;
+  #ifdef HAVE_MPI
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  #endif
+
+  string filename = "obj_gradients.csv";
+
+  if (rank == MASTER_NODE) cout << "Accessing Jax gradient file: " << filename << endl;
+
+  ifstream  data(filename);
+  string line;
+  vector<vector<su2double> > parsedCsv;
+  while(getline(data,line)) {
+    stringstream lineStream(line);
+    string cell;
+    vector<su2double> parsedRow;
+    while(getline(lineStream,cell,',')) {
+      parsedRow.push_back(stod(cell));
+    }
+    parsedCsv.push_back(parsedRow);
+  }
+
+  cout << parsedCsv.size() << endl;
+  cout << parsedCsv[0].size() << endl;
+  cout << parsedCsv[0][0] << endl;
+
+  for(int iPoint = 0; iPoint<nPoint; iPoint++) {
+    for (int iVar=0; iVar < nDim+2; iVar++) {
+      dJdU_Jax[iPoint][iVar] = parsedCsv[iPoint][iVar];
+    }
+  }
+
 }

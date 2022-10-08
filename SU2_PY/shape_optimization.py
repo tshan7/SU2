@@ -108,6 +108,7 @@ def shape_optimization( filename                           ,
                         nzones      = 1                    ):
     # Config
     config = SU2.io.Config(filename)
+    print(config.OBJECTIVE_FUNCTION)
     config.NUMBER_PART = partitions
     config.NZONES      = int( nzones )
     if quiet: config.CONSOLE = 'CONCISE'

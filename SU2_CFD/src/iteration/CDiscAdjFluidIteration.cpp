@@ -341,6 +341,10 @@ void CDiscAdjFluidIteration::Preprocess(COutput* output, CIntegration**** integr
     }
   }
 
+  if (config[iZone]->GetKind_ObjFunc()==JAX_OBJ){
+    solvers0[ADJFLOW_SOL]-> ExtractCAA_Sensitivity(geometries[MESH_0], config[iZone]);
+  }
+
   solvers0[ADJFLOW_SOL]->Preprocessing(geometries[MESH_0], solvers0, config[iZone],
                                        MESH_0, 0, RUNTIME_ADJFLOW_SYS, false);
 

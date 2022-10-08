@@ -59,7 +59,8 @@ protected:
   su2double Total_Sens_ModVel;   /*!< \brief Total sensitivity to inlet velocity (incompressible). */
   su2double Mach, Alpha, Beta, Pressure, Temperature, BPressure, ModVel;
   su2double TemperatureRad, Total_Sens_Temp_Rad;
-
+  su2double **dJdU_Jax;
+  short *LocalPointIndex;
   CDiscAdjVariable* nodes = nullptr;  /*!< \brief The highest level in the variable hierarchy this solver can safely use. */
 
   /*!
@@ -261,6 +262,8 @@ public:
   /*!
    * \brief Depends on the direct solver.
    */
+  void ExtractCAA_Sensitivity(CGeometry *geometry,
+                              CConfig *config);
   inline bool GetHasHybridParallel() const override {
     if (direct_solver) return direct_solver->GetHasHybridParallel();
     return false;

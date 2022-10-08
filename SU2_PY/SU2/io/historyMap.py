@@ -484,6 +484,10 @@ history_header_map = {'ADJOINT_DISP_X': {'DESCRIPTION': 'Root-mean square residu
                              'GROUP': 'CP_DIFF',
                              'HEADER': 'Cp_Diff',
                              'TYPE': 'COEFFICIENT'},
+ 'JAX_OBJ': {'DESCRIPTION': 'Objective function computed externally in Jax script',
+          'GROUP': 'FLOW_COEFF',
+          'HEADER': 'JAX_OBJ',
+          'TYPE': 'COEFFICIENT'},
  'LIFT': {'DESCRIPTION': 'Total lift coefficient on all surfaces set with '
                          'MARKER_MONITORING',
           'GROUP': 'AERO_COEFF',
