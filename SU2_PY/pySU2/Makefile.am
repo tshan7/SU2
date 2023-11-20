@@ -46,7 +46,7 @@ endif
 
 PYTHON_SITE_PACKAGES=$(shell python -c "import site; print(site.getsitepackages()[0])")
 #NUMPY_INCLUDE = /usr/lib/python2.7/dist-packages/numpy/core/include
-MPI4PY_INCLUDE = ${HOME}/.local/lib/python2.7/site-packages/mpi4py/include \
+MPI4PY_INCLUDE = ${HOME}/tejal/miniconda3/lib/python3.9/site-packages/mpi4py/include \
                  -I${PYTHON_SITE_PACKAGES}/mpi4py/include \
                  -I/Library/Python/2.7/site-packages/mpi4py/include
 

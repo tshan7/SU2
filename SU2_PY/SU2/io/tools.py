@@ -461,7 +461,8 @@ def get_adjointSuffix(objective_function=None):
                  "MASS_FLOW_IN"                : "mfi"       ,
                  "TOTAL_EFFICIENCY"            : "teff"      ,
                  "TOTAL_STATIC_EFFICIENCY"     : "tseff"     ,
-                 "COMBO"                       : "combo"}
+                 "COMBO"                       : "combo"    ,
+                 "JAX_OBJ"                     : "jax"}
     
     # if none or false, return map
     if not objective_function:

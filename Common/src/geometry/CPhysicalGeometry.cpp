@@ -9145,6 +9145,36 @@ void CPhysicalGeometry::SetSensitivity(CConfig *config) {
 
   }
 
+  if (config->GetKind_ObjFunc()==JAX_OBJ) {
+    cout << "Accumulating dJ/dX from file." << endl;
+
+    string filename = "mesh_gradients.csv";
+
+    ifstream  data(filename);
+    string line;
+    vector<vector<su2double> > parsedCsv;
+    while(getline(data,line)) {
+      stringstream lineStream(line);
+      string cell;
+      vector<su2double> parsedRow;
+      while(getline(lineStream,cell,',')) {
+        parsedRow.push_back(stod(cell));
+      }
+      parsedCsv.push_back(parsedRow);
+    }
+
+    cout << parsedCsv.size() << endl;
+    cout << parsedCsv[0].size() << endl;
+    cout << parsedCsv[0][0] << endl;
+
+    for (iPoint_Global = 0; iPoint_Global < GetGlobal_nPointDomain(); iPoint_Global++ ) {
+      Sensitivity(iPoint_Global,0) += parsedCsv[iPoint_Global][0];
+      Sensitivity(iPoint_Global,1) += parsedCsv[iPoint_Global][1];
+      if (nDim == 3)
+        Sensitivity(iPoint_Global,2) += parsedCsv[iPoint_Global][2];  
+    }
+  }
+
 }
 
 void CPhysicalGeometry::ReadUnorderedSensitivity(CConfig *config) {

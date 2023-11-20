@@ -710,7 +710,8 @@ void CDiscAdjSolver::ExtractCAA_Sensitivity(CGeometry *geometry, CConfig *config
 
   for(int iPoint = 0; iPoint<nPoint; iPoint++) {
     for (int iVar=0; iVar < nDim+2; iVar++) {
-      dJdU_Jax[iPoint][iVar] = parsedCsv[iPoint][iVar];
+      int iPoint_Local = geometry->GetGlobal_to_Local_Point(iPoint);
+      dJdU_Jax[iPoint_Local][iVar] = parsedCsv[iPoint][iVar];
     }
   }
 
